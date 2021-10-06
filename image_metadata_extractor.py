@@ -2,16 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import os
-import exifread
+from exifread import process_file
 
 
-dir_name = '/Users/rkitay/Pictures/Sorting/Sort_From_Home_Most_should_be_duplicates/2011/07'
-dir_name = '/Users/rkitay/Pictures/Sorting/AAAA'
-dir_name = '/Users/rkitay/Pictures/Sorting/Sort_From_Home_Most_should_be_duplicates/___Much More to Sort'
+# dir_name = '/Users/rkitay/Pictures/Sorting/Sort_From_Home_Most_should_be_duplicates/2011/07'
+# dir_name = '/Users/rkitay/Pictures/Sorting/AAAA'
+# dir_name = '/Users/rkitay/Pictures/Sorting/Sort_From_Home_Most_should_be_duplicates/___Much More to Sort'
+dir_name = '/Users/rkitay/OneDrive/_CopyToHome/Pictures'
 
 
 DEMO = True
-DEMO = False
+# DEMO = False
 
 def is_image(file_name):
     file_name = file_name.lower()
@@ -23,7 +24,7 @@ def is_video(file_name):
     return file_name.endswith(".mp4")
 
 
-from mp4file.mp4file import Mp4File
+# from mp4file.mp4file import Mp4File
 
 def find_metadata_atom(file, name):
     atom = file.find('.//%s//data' % name)
@@ -37,7 +38,7 @@ if __name__ == '__main__':
             old_file_name = dir_name + '/' + file_name
             # print "Reading %s" % old_file_name
             f = open(old_file_name, 'rb')
-            tags = exifread.process_file(f)
+            tags = process_file(f)
             # print tags
             if tags.__contains__("EXIF DateTimeOriginal"):
                 raw_original_date_time = tags["EXIF DateTimeOriginal"].printable
@@ -55,7 +56,7 @@ if __name__ == '__main__':
                 file_time_stamp = raw_original_date_time.replace(':', '').replace(' ', '_')
                 # print file_time_stamp
 
-                new_file_name = dir_name + '/' + file_time_stamp + '.jpg'
+                new_file_name = dir_name + '/IMG_' + file_time_stamp + '.jpg'
                 print "Renaming %s to be %s" % (old_file_name, new_file_name)
                 if not DEMO:
                     os.rename(old_file_name, new_file_name)
