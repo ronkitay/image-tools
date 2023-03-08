@@ -7,9 +7,10 @@ RUN pip install exifread
 # Video metadata retrival
 RUN apt update && apt install -y ffmpeg
 RUN pip install ffmpeg-python
+RUN pip install python-dateutil
 
-RUN mkdir /root/image-tools/
+RUN mkdir /root/tools/
 
-ADD tools/rename_by_metadata.py /root/image-tools/rename_by_metadata.py
+ADD tools/rename_by_metadata.py /root/tools/rename_by_metadata.py
 
-RUN echo 'export PATH=/root/image-tools:${PATH}' >> ${ZSHRC_FILE}
+RUN echo 'export PATH=/root/tools/:${PATH}' >> ${ZSHRC_FILE}
