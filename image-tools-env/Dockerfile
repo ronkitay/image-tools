@@ -12,5 +12,6 @@ RUN pip install python-dateutil
 RUN mkdir /root/tools/
 
 ADD tools/rename_by_metadata.py /root/tools/rename_by_metadata.py
+ADD tools/rename_by_pattern.py /root/tools/rename_by_pattern.py
 
 RUN echo 'export PATH=/root/tools/:${PATH}' >> ${ZSHRC_FILE}
