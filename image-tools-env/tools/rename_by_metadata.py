@@ -117,15 +117,19 @@ def _rename_based_on_metadata(directory, file_name, debug_mode, metadata_extract
         new_file_name = _get_new_file_name(
             directory, file_time_stamp, extension)
 
+        if new_file_name == original_file_name:
+            print('{} already has the correct name, skipping'.format(
+                original_file_name))
+            return
+
         while os.path.exists(new_file_name):
             print("{} already exists, adding a suffix".format(new_file_name))
             file_time_stamp = file_time_stamp + "-1"
             new_file_name = _get_new_file_name(
                 directory, file_time_stamp, extension)
-
-        if new_file_name == original_file_name:
-            print('{} already has the correct name, skipping'.format(
-                original_file_name))
+            if new_file_name == original_file_name:
+                print('{} already has the correct name, skipping'.format(
+                    original_file_name))
             return
 
         print("Renaming {} to be {}".format(
