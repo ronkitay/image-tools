@@ -15,17 +15,23 @@ image_extensions = {"jpg", "jpeg", "gif"}
 video_extensions = {"mp4", "mov", "avi"}
 
 
-def _rename_files_based_on_metadata(directory, debug_mode):
+def _rename_files_based_on_metadata(directory, recursive, debug_mode):
     for file_name in os.listdir(directory):
-        metadata_extractor = None
-        if _is_image(file_name):
-            metadata_extractor = _extract_metadata_from_image_file
-        if _is_video(file_name):
-            metadata_extractor = _extract_metadata_from_video_file
+        full_path = os.path.join(directory, file_name)
+        if os.path.isdir(full_path):
+            if recursive:
+                _rename_files_based_on_metadata(
+                    full_path, recursive, debug_mode)
+        else:
+            metadata_extractor = None
+            if _is_image(file_name):
+                metadata_extractor = _extract_metadata_from_image_file
+            if _is_video(file_name):
+                metadata_extractor = _extract_metadata_from_video_file
 
-        if metadata_extractor:
-            _rename_based_on_metadata(
-                directory, file_name, debug_mode, metadata_extractor)
+            if metadata_extractor:
+                _rename_based_on_metadata(
+                    directory, file_name, debug_mode, metadata_extractor)
 
 
 def _is_image(file_name):
@@ -111,16 +117,16 @@ def _rename_based_on_metadata(directory, file_name, debug_mode, metadata_extract
         new_file_name = _get_new_file_name(
             directory, file_time_stamp, extension)
 
-        if new_file_name == original_file_name:
-            print('{} already has the correct name, skipping'.format(
-                original_file_name))
-            return
-
         while os.path.exists(new_file_name):
             print("{} already exists, adding a suffix".format(new_file_name))
             file_time_stamp = file_time_stamp + "-1"
             new_file_name = _get_new_file_name(
                 directory, file_time_stamp, extension)
+
+        if new_file_name == original_file_name:
+            print('{} already has the correct name, skipping'.format(
+                original_file_name))
+            return
 
         print("Renaming {} to be {}".format(
             original_file_name, new_file_name))
@@ -139,6 +145,8 @@ def main(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', dest="debug_mode",
                         action='store_true')
+    parser.add_argument('-r', '--recursive', dest="recursive",
+                        action='store_true')
     parser.add_argument(dest="path", type=str,
                         help='The path to scan for images')
 
@@ -149,7 +157,8 @@ def main(args):
 
     print('working on files in {}'.format(arguments.path))
 
-    _rename_files_based_on_metadata(arguments.path, arguments.debug_mode)
+    _rename_files_based_on_metadata(
+        arguments.path, arguments.recursive, arguments.debug_mode)
 
 
 if __name__ == '__main__':
