@@ -13,5 +13,6 @@ RUN mkdir /root/tools/
 
 ADD tools/rename_by_metadata.py /root/tools/rename_by_metadata.py
 ADD tools/rename_by_pattern.py /root/tools/rename_by_pattern.py
+ADD tools/remove_numeric_suffix.py /root/tools/remove_numeric_suffix.py
 
 RUN echo 'export PATH=/root/tools/:${PATH}' >> ${ZSHRC_FILE}
