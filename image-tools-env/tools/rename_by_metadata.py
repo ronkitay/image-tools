@@ -16,12 +16,16 @@ video_extensions = {"mp4", "mov", "avi"}
 
 
 def _rename_files_based_on_metadata(directory, recursive, debug_mode):
+    files_scanned = 0
+    files_renamed = 0
     for file_name in os.listdir(directory):
         full_path = os.path.join(directory, file_name)
         if os.path.isdir(full_path):
             if recursive:
-                _rename_files_based_on_metadata(
+                added_scanned, added_renamed = _rename_files_based_on_metadata(
                     full_path, recursive, debug_mode)
+                files_scanned += added_scanned
+                files_renamed += added_renamed
         else:
             metadata_extractor = None
             if _is_image(file_name):
@@ -30,8 +34,12 @@ def _rename_files_based_on_metadata(directory, recursive, debug_mode):
                 metadata_extractor = _extract_metadata_from_video_file
 
             if metadata_extractor:
-                _rename_based_on_metadata(
-                    directory, file_name, debug_mode, metadata_extractor)
+                files_scanned += 1
+                if _rename_based_on_metadata(
+                        directory, file_name, debug_mode, metadata_extractor):
+                    files_renamed += 1
+
+    return files_scanned, files_renamed
 
 
 def _is_image(file_name):
@@ -120,7 +128,7 @@ def _rename_based_on_metadata(directory, file_name, debug_mode, metadata_extract
         if new_file_name == original_file_name:
             print('{} already has the correct name, skipping'.format(
                 original_file_name))
-            return
+            return False
 
         while os.path.exists(new_file_name):
             print("{} already exists, adding a suffix".format(new_file_name))
@@ -130,14 +138,16 @@ def _rename_based_on_metadata(directory, file_name, debug_mode, metadata_extract
             if new_file_name == original_file_name:
                 print('{} already has the correct name, skipping'.format(
                     original_file_name))
-            return
+                return False
 
         print("Renaming {} to be {}".format(
             original_file_name, new_file_name))
         if not debug_mode:
             os.rename(original_file_name, new_file_name)
+        return True
     else:
         print("No date/time in tags for {}".format(original_file_name))
+        return False
 
 
 def _get_new_file_name(directory, file_timestamp, extension):
@@ -161,8 +171,10 @@ def main(args):
 
     print('working on files in {}'.format(arguments.path))
 
-    _rename_files_based_on_metadata(
+    files_scanned, files_renamed = _rename_files_based_on_metadata(
         arguments.path, arguments.recursive, arguments.debug_mode)
+
+    print(f"Scanned a total of {files_scanned}, renamed {files_renamed}")
 
 
 if __name__ == '__main__':
