@@ -11,7 +11,7 @@ import ffmpeg
 from zoneinfo import ZoneInfo
 from dateutil import parser
 
-image_extensions = {"jpg", "jpeg", "gif"}
+image_extensions = {"jpg", "jpeg", "gif", "png"}
 video_extensions = {"mp4", "mov", "avi"}
 
 
@@ -77,14 +77,18 @@ def _extract_metadata_from_image_file(full_file_name):
 
 def _extract_date_time_from_image_file(full_file_name):
     f = open(full_file_name, 'rb')
-    tags = process_file(f)
-    if tags.__contains__("EXIF DateTimeOriginal"):
-        return tags["EXIF DateTimeOriginal"].printable
-    elif tags.__contains__("Image DateTime"):
-        return tags["Image DateTime"].printable
-    else:
+    try:
+        tags = process_file(f)
+    
+        if tags.__contains__("EXIF DateTimeOriginal"):
+            return tags["EXIF DateTimeOriginal"].printable
+        elif tags.__contains__("Image DateTime"):
+            return tags["Image DateTime"].printable
+        else:
+            return None
+    except Exception as e:
+        print("Error processing {}: {}".format(full_file_name, e))
         return None
-
 
 def _extract_metadata_from_video_file(full_file_name):
     timestamp = _extract_timestamp_from_video_file(full_file_name)
