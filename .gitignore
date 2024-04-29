@@ -106,3 +106,7 @@ ENV/
 
 # MacOs
 .DS_Store
+
+# Private
+.dockerhub_username
+.dockerhub_password
