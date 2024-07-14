@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 from dateutil import parser
 
 image_extensions = {"jpg", "jpeg", "gif", "png"}
-video_extensions = {"mp4", "mov", "avi"}
+video_extensions = {"mp4", "mov", "avi", "3gp"}
 
 
 def _rename_files_based_on_metadata(directory, recursive, debug_mode):
