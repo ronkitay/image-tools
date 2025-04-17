@@ -6,7 +6,7 @@ import os
 import re
 import sys
 
-image_extensions = {"jpg", "jpeg", "gif"}
+image_extensions = {"jpg", "jpeg", "gif", "heic"}
 video_extensions = {"mp4", "mov", "avi", "mpeg"}
 
 

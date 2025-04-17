@@ -6,7 +6,7 @@ import os
 import sys
 import argparse
 
-image_extensions = {"jpg", "jpeg", "gif"}
+image_extensions = {"jpg", "jpeg", "gif", "heic"}
 video_extensions = {"mp4", "mov", "avi"}
 
 pattern = re.compile(

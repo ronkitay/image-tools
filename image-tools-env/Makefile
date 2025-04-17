@@ -1,6 +1,6 @@
 REPO_ROOT := $(shell git rev-parse --show-toplevel)
 RELEASE := $(shell cat $(HOME)/.my-docker-images.release)
-DOCKER_REPO := "ronkitay"
+DOCKER_REPO := ronkitay
 DOCKER_HUB_USERNAME := $(shell cat $(REPO_ROOT)/image-tools-env/.dockerhub_username)
 
 define docker_login
@@ -14,7 +14,7 @@ define make_image
 
 	echo "Running command [docker build $(EXTRA_BUILD_ARGS) --build-arg RELEASE=$(RELEASE) $(BUILD_ARGS) -t $(DOCKER_REPO)/${1}:$(RELEASE) .]"
 	echo ""
-	
+
 	docker build --platform linux/arm64 $(EXTRA_BUILD_ARGS) --build-arg RELEASE=$(RELEASE) --build-arg DOCKER_REPO=$(DOCKER_REPO) $(BUILD_ARGS) -t $(DOCKER_REPO)/${1}:$(RELEASE) .
 
 	echo ""
@@ -32,4 +32,3 @@ docker-login:
 
 image-tools-env: docker-login
 	$(call make_image,image-tools-env)
-

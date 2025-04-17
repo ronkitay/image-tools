@@ -1,0 +1,3 @@
+IMAGE_TOOLS_HOME=${BASE_DIR}/image-tools
+
+export PATH=${PATH}:${IMAGE_TOOLS_HOME}/scripts

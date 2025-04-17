@@ -11,7 +11,12 @@ import ffmpeg
 from zoneinfo import ZoneInfo
 from dateutil import parser
 
-image_extensions = {"jpg", "jpeg", "gif", "png"}
+import pyheif
+import os
+from PIL import Image, ExifTags
+from pillow_heif import register_heif_opener
+
+image_extensions = {"jpg", "jpeg", "gif", "png", "heic"}
 video_extensions = {"mp4", "mov", "avi", "3gp"}
 
 
@@ -76,18 +81,51 @@ def _extract_metadata_from_image_file(full_file_name):
 
 
 def _extract_date_time_from_image_file(full_file_name):
-    f = open(full_file_name, 'rb')
-    try:
-        tags = process_file(f)
-    
-        if tags.__contains__("EXIF DateTimeOriginal"):
-            return tags["EXIF DateTimeOriginal"].printable
-        elif tags.__contains__("Image DateTime"):
-            return tags["Image DateTime"].printable
-        else:
+
+    if full_file_name.lower().endswith('.heic'):
+        return _extract_heic_metadata(full_file_name)
+    else:
+        f = open(full_file_name, 'rb')
+        try:
+            tags = process_file(f)
+
+            if tags.__contains__("EXIF DateTimeOriginal"):
+                return tags["EXIF DateTimeOriginal"].printable
+            elif tags.__contains__("Image DateTime"):
+                return tags["Image DateTime"].printable
+            else:
+                return None
+        except Exception as e:
+            print("Error processing {}: {}".format(full_file_name, e))
             return None
+
+def _extract_heic_metadata(heic_file_path):
+    try:
+        # Open the HEIC file with Pillow
+        img = Image.open(heic_file_path)
+
+        # Try to get the EXIF data
+        exif_data = img.getexif()
+
+        # EXIF tag for DateTime and DateTimeOriginal
+        # 306 = DateTime
+        # 36867 = DateTimeOriginal (when the photo was taken)
+        # 36868 = DateTimeDigitized
+
+        # First try DateTimeOriginal (most accurate for photos)
+        creation_date = exif_data.get(36867)
+
+        # If not found, try DateTime
+        if not creation_date:
+            creation_date = exif_data.get(306)
+
+        # If still not found, try DateTimeDigitized
+        if not creation_date:
+            creation_date = exif_data.get(36868)
+
+        return creation_date
     except Exception as e:
-        print("Error processing {}: {}".format(full_file_name, e))
+        print("Error processing {}: {}".format(heic_file_path, e))
         return None
 
 def _extract_metadata_from_video_file(full_file_name):
@@ -174,6 +212,8 @@ def main(args):
         print('Running in DEBUG mode')
 
     print('working on files in {}'.format(arguments.path))
+
+    register_heif_opener()
 
     files_scanned, files_renamed = _rename_files_based_on_metadata(
         arguments.path, arguments.recursive, arguments.debug_mode)
