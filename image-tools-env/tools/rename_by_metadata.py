@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -11,9 +11,8 @@ import ffmpeg
 from zoneinfo import ZoneInfo
 from dateutil import parser
 
-import pyheif
 import os
-from PIL import Image, ExifTags
+from PIL import Image
 from pillow_heif import register_heif_opener
 
 image_extensions = {"jpg", "jpeg", "gif", "png", "heic"}
