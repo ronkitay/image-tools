@@ -2,11 +2,11 @@ ARG RELEASE
 ARG DOCKER_REPO
 FROM ${DOCKER_REPO}/python-3-env:${RELEASE}
 
-RUN apt update && apt install -y ffmpeg python3-virtualenv
+RUN apt update && apt install -y ffmpeg 
 
 RUN virtualenv /root/.venv
 
-RUN . /root/.venv/bin/activate && pip install exifread ffmpeg-python python-dateutil
+RUN . /root/.venv/bin/activate && pip install exifread ffmpeg-python python-dateutil pillow_heif
 
 RUN echo 'source /root/.venv/bin/activate' >> ${ZSHRC_FILE}
 
